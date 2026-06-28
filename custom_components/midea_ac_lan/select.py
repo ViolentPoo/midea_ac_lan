@@ -44,8 +44,19 @@ class MideaSelect(MideaEntity, SelectEntity):
 
     @property
     def options(self) -> list[str]:
-        """Return entity options."""
-        return cast("list", getattr(self._device, self._options_name))
+        """Return entity options with device-specific overrides."""
+
+        # ----------------------------
+        # Cube 35 override (IMPORTANT)
+        # ----------------------------
+        if (
+            self._device.device_type == 0xA1
+            and self._entity_key == "fan_speed"
+        ):
+            return ["Low", "High"]
+
+        raw_options = cast("list", getattr(self._device, self._options_name))
+        return raw_options
 
     @property
     def current_option(self) -> str:
